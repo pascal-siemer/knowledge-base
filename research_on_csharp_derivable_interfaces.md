@@ -1,0 +1,54 @@
+# Research on Derivable Interfaces
+
+If we look into languages like Haskell and Rust, one feature might be confusing at first: \
+how can they implement features like standard string formatting ([Haskell] Show, [Rust] Display) on custom data types? \
+
+At first it seems like magic but if you get to the core of it, its actually default implementations on interfaces-likes being put on our custom data. \
+In Rusts case its more of the compiler auto-generating default implementations for these interfaces-likes (traits), but that is more a detail than a difference. \
+
+So: why does this post exist? \
+I found a way to implement such a mechanism in csharp using its default featureset. \
+
+**Default Implementations on Interfaces** \
+Modern csharp has the ability to implement default implementations for interface members which do not need to be implemented in its implementing classes. \
+Wow! That sound just like what we want! \
+Well.. not really. \
+The default implementation is only available when accessing an object over its interface. The implementation itself does not exist on the class. \
+My guess is that has been done to deal with the diamond-problem. \
+
+But luckily, csharp has a mechanism to implement functions on classes from outside of the class. \
+What we need is an **Extension** that makes these default implementations accessible by default. \
+So now we have to deal with the diamond problem? And how do these extensions deal with actual implementations on these classes? \
+In Short: When overwriting the default implementation, this implementation will always be used, even with an extension. More on that later. \
+Also: this solution deals with the diamond problem in preventing you from using the extension method on a class if two equal extension methods have been found. \
+This is basically what Rust seems to be doing in this case. \
+
+**Here is an code example of a derivable interface** \
+
+    public interface Displayable {
+        public string Display() = {
+            ... // default implementation
+        }
+    }
+
+    public static class DisplayableExtensions {
+        
+        public static string Display(this Displayable self) {
+            return self.Display;
+        }
+
+        
+        // or with generics: 
+        public static string Display<Self>(this Self self) where Self: Displayable {
+            return self.Display;
+        }           
+    }
+
+    public class Thing : Displayable {
+        ...
+    }
+
+
+**Ideas:** \
+
+- maybe this pattern can be simplified by using attributes and code generation?
