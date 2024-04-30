@@ -1,0 +1,3 @@
+Monoid -> Mergeable
+
+Applicative -> Operation
