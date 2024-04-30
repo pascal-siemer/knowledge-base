@@ -1,3 +1,6 @@
-Monoid -> Mergeable
+Monoid -!-> Mergeable
 
-Applicative -> Operation
+Semigroup -> Mergeable
+
+Applicative -!-> Operation
+because Applicatives are also Wrapped Values, not just wrapped functions
